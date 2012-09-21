@@ -6,15 +6,8 @@
 //-----------------------------------------------------------------------------
 // Global CONSTANTS
 //-----------------------------------------------------------------------------
-
-#define  SYSCLK         24500000       // System clock frequency in Hz
-
 #define  SMB_FREQUENCY  10000          // Target SCL clock rate
-                                       // This example supports between 10kHz
-                                       // and 100kHz (maybe 400kHz)
-
-// Device addresses (7 bits, lsb is a don't care)
-#define  SLAVE_ADDR_WR  0x3A           // Device address for slave target
+                                       // This example supports between 10kHz and 100kHz 
 
 #define  WRITE          0x00           // SMBus WRITE command
 #define  READ           0x01           // SMBus READ command
@@ -30,20 +23,38 @@
 #define  NUM_BYTES_RD   12            // Max Number of bytes to read
                                        // Master <- Slave
 
-
-
 //-----------------------------------------------------------------------------
 // Global VARIABLES
 //-----------------------------------------------------------------------------
+
+// Global holder for SMBus data
+// All receive data is written here
+extern xdata unsigned char SMB_DATA_IN[NUM_BYTES_RD];
+
+// Global holder for SMBus data.
+// All transmit data is read from here
+extern xdata unsigned char SMB_DATA_OUT[NUM_BYTES_WR];
+
+extern unsigned char TARGET;                  // Target SMBus slave address
+
+extern bit SMB_BUSY;                          // Software flag to indicate when the
+                                       // SMB_Read() or SMB_Write() functions
+                                       // have claimed the SMBus
+
+extern bit SMB_RW;                            // Software flag to indicate the
+                                       // direction of the current transfer
+//bit SMB_TIMEOUT;                       // Software flag to indicate SMBus
+                                       // communication timeout
+
+//unsigned long NUM_ERRORS = 0;          // Counter for the number of errors.
+
+extern unsigned int ByteRequested;
 
 // Counter for the number of communication error with the salve module (SMBus)
 extern unsigned long NUM_ERRORS;
 // Software flag to indicate timeout during the last SMBus communication
 extern bit SMB_TIMEOUT;
 
-
-sbit SDA = P0^2;                       // SMBus on P0.0
-sbit SCL = P0^3;                       // and P0.1
 
 
 //-----------------------------------------------------------------------------
@@ -53,32 +64,12 @@ sbit SCL = P0^3;                       // and P0.1
 // Initialization functions
 void SMBus_Init (void);
 
-
 // Interruption routines
 void SMBus_ISR (void);
 
 // Helpers
-
 void Timer3_ISR (void);
-
-// Communication with module (see associated .pdf documentation)
-int  getID(void);
-void StopConso(void);
-void StartConso(void);
-void GetLatitude(void);
-void GetLongitude(void);
-void GetLigneImage(void);
-void GetDate(void);
-void TakePicture(void);
-
-void StartACC(void);
-unsigned char GetAccID(void);
-void GetAccX(void);
-
-
-// Helpers
 void SMB_Write (void);
 void SMB_Read (void);
-void send_acc_command(unsigned char cmd, unsigned char size, unsigned char wait);
-void send_acc_command_to_specific_register(unsigned char theregister,unsigned char cmd);
+
 #endif //I2CLIB

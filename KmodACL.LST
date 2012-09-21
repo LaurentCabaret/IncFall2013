@@ -1,0 +1,108 @@
+C51 COMPILER V9.03   KMODACL                                                               09/22/2012 00:37:49 PAGE 1   
+
+
+C51 COMPILER V9.03, COMPILATION OF MODULE KMODACL
+OBJECT MODULE PLACED IN KmodACL.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe KmodACL.c DB OE BR INCDIR(C:\SiLabs\MCU\Inc)
+
+line level    source
+
+   1          #include "I2CLib.h"
+   2          #include "KmodACL.h"
+   3          
+   4          void GetAccX(void) {
+   5   1         // Reset Timeout flag
+   6   1         SMB_TIMEOUT = 0;
+   7   1      
+   8   1         // Send command
+   9   1         SMB_DATA_OUT[0] = 0x32;          // Command byte
+  10   1         TARGET = KMODACL_ADDR;            // Target the Slave for next SMBus
+  11   1                                         // transfer
+  12   1         SMB_Write();                    // Initiate SMBus write
+  13   1      
+  14   1         // Read response
+  15   1            TARGET = KMODACL_ADDR;            // Target the Slave for next SMBus
+  16   1                                            // transfer
+  17   1            ByteRequested = 6;           // Size of the answer
+  18   1            T0_Waitms (10);               // Wait for the request to be processed
+  19   1            SMB_Read();                     // Read the answer
+  20   1         
+  21   1         
+  22   1         AccX = SMB_DATA_IN[0] + (int)SMB_DATA_IN[1]<<8;
+  23   1         AccY = SMB_DATA_IN[2] + (int)SMB_DATA_IN[3]<<8;
+  24   1         AccZ = SMB_DATA_IN[4] + (int)SMB_DATA_IN[5]<<8;
+  25   1      }
+  26          
+  27          
+  28          
+  29          
+  30          
+  31          void StartACC(void)
+  32          {   
+  33   1         send_acc_command_to_specific_register(0x38,0x00);
+  34   1         send_acc_command_to_specific_register(0x31,0x0F);
+  35   1         send_acc_command_to_specific_register(0x2C,0x04);
+  36   1         send_acc_command_to_specific_register(0x2D,0x00);
+  37   1         send_acc_command_to_specific_register(0x2D,0x10);
+  38   1         send_acc_command_to_specific_register(0x2D,0x08);
+  39   1      }
+  40          
+  41          unsigned char GetAccID(void)
+  42          {
+  43   1         send_acc_command(0x00, 1, 10);
+  44   1         return SMB_DATA_IN[0];
+  45   1      
+  46   1      }
+  47          
+  48          //---------------------------------------------------------------
+  49          // Communication with the ACC module
+  50          //---------------------------------------------------------------
+  51          void send_acc_command(unsigned char cmd, unsigned char size, unsigned char wait) {
+  52   1         // Reset Timeout flag
+  53   1         SMB_TIMEOUT = 0;
+  54   1      
+  55   1         // Send command
+C51 COMPILER V9.03   KMODACL                                                               09/22/2012 00:37:49 PAGE 2   
+
+  56   1         SMB_DATA_OUT[0] = cmd;          // Command byte
+  57   1         TARGET = KMODACL_ADDR;            // Target the Slave for next SMBus
+  58   1                                         // transfer
+  59   1         SMB_Write();                    // Initiate SMBus write
+  60   1      
+  61   1      
+  62   1         // Read response
+  63   1         if (size > 0) {
+  64   2            TARGET = KMODACL_ADDR;            // Target the Slave for next SMBus
+  65   2                                            // transfer
+  66   2            ByteRequested = size;           // Size of the answer
+  67   2            T0_Waitms (wait);               // Wait for the request to be processed
+  68   2            SMB_Read();                     // Read the answer
+  69   2         }
+  70   1      }
+  71          
+  72          void send_acc_command_to_specific_register(unsigned char theregister,unsigned char cmd) {
+  73   1         // Reset Timeout flag
+  74   1         SMB_TIMEOUT = 0;
+  75   1      
+  76   1         // Send command
+  77   1         SMB_DATA_OUT[0] = theregister;          // Command byte
+  78   1         SMB_DATA_OUT[1] = cmd;          // Command byte
+  79   1         TARGET = KMODACL_ADDR;            // Target the Slave for next SMBus
+  80   1                                         // transfer
+  81   1         SMB_Write();                    // Initiate SMBus write
+  82   1      }
+  83          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    198    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

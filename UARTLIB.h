@@ -7,10 +7,6 @@
 
 #include "BaseLib.h"
 
-#define BAUDRATE             19200           // Baud rate of UART in bps
-
-
-void UART0_Init(void);
 
 //Communication avec le portable
 void SendChar(char);

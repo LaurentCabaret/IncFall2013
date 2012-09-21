@@ -1,0 +1,70 @@
+C51 COMPILER V9.03   KMODGPS                                                               09/22/2012 00:37:49 PAGE 1   
+
+
+C51 COMPILER V9.03, COMPILATION OF MODULE KMODGPS
+OBJECT MODULE PLACED IN KmodGPS.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe KmodGPS.c DB OE BR INCDIR(C:\SiLabs\MCU\Inc)
+
+line level    source
+
+   1          #include "I2CLib.h"
+   2          #include "KmodGPS.h"
+   3          //---------------------------------------------------------------
+   4          // Communication with the GPS module
+   5          //---------------------------------------------------------------
+   6          void send_gps_command(unsigned char cmd, unsigned char size, unsigned char wait) {
+   7   1         // Reset Timeout flag
+   8   1         SMB_TIMEOUT = 0;
+   9   1      
+  10   1         // Send command
+  11   1         SMB_DATA_OUT[0] = cmd;          // Command byte
+  12   1         TARGET = KMODGPS_ADDR;            // Target the Slave for next SMBus
+  13   1                                         // transfer
+  14   1         SMB_Write();                    // Initiate SMBus write
+  15   1      
+  16   1         // Read response
+  17   1         if (size > 0) {
+  18   2            TARGET = KMODGPS_ADDR;            // Target the Slave for next SMBus
+  19   2                                            // transfer
+  20   2            ByteRequested = size;           // Size of the answer
+  21   2            T0_Waitms (wait);               // Wait for the request to be processed
+  22   2            SMB_Read();                     // Read the answer
+  23   2         }
+  24   1      }
+  25          
+  26          int GetID(void) {
+  27   1         send_gps_command(CMD_GETID, SIZE_GETID, 1);
+  28   1         if (SMB_TIMEOUT)
+  29   1            return -1;
+  30   1         else
+  31   1            return SMB_DATA_IN[0];
+  32   1      }
+  33          
+  34          void GetLatitude(void) {
+  35   1         send_gps_command(CMD_GETLAT, SIZE_GETLAT, 10);
+  36   1         memcpy(Latitude, SMB_DATA_IN, SIZE_GETLAT);
+  37   1      }
+  38          void GetLongitude(void) {
+  39   1         send_gps_command(CMD_GETLONG, SIZE_GETLONG, 10);
+  40   1         memcpy(Longitude, SMB_DATA_IN, SIZE_GETLAT);
+  41   1      }
+  42          void GetDate(void) {
+  43   1         send_gps_command(CMD_GETDATE, SIZE_GETDATE, 10);
+  44   1         memcpy(Date, SMB_DATA_IN, SIZE_GETDATE);
+  45   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    151    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+C51 COMPILER V9.03   KMODGPS                                                               09/22/2012 00:37:49 PAGE 2   
+
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

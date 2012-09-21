@@ -496,13 +496,13 @@ void send_gps_command(unsigned char cmd, unsigned char size, unsigned char wait)
 
    // Send command
    SMB_DATA_OUT[0] = cmd;          // Command byte
-   TARGET = SLAVE_GPS_ADR;            // Target the Slave for next SMBus
+   TARGET = KMODACL_ADDR;            // Target the Slave for next SMBus
                                    // transfer
    SMB_Write();                    // Initiate SMBus write
 
    // Read response
    if (size > 0) {
-      TARGET = SLAVE_GPS_ADR;            // Target the Slave for next SMBus
+      TARGET = KMODACL_ADDR;            // Target the Slave for next SMBus
                                       // transfer
       ByteRequested = size;           // Size of the answer
       T0_Waitms (wait);               // Wait for the request to be processed

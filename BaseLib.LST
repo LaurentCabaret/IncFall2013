@@ -1,0 +1,263 @@
+C51 COMPILER V9.03   BASELIB                                                               09/22/2012 00:37:49 PAGE 1   
+
+
+C51 COMPILER V9.03, COMPILATION OF MODULE BASELIB
+OBJECT MODULE PLACED IN BaseLib.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe BaseLib.c DB OE BR INCDIR(C:\SiLabs\MCU\Inc)
+
+line level    source
+
+   1          #include "I2CLib.h"
+   2          #include "UARTLIB.h"
+   3          
+   4          
+   5          //---------------------------------------------------------------
+   6          // Initialisation globale du système
+   7          //---------------------------------------------------------------
+   8          void SysInit(void)
+   9          {
+  10   1        unsigned char i;                    // Dummy variable counters
+  11   1        unsigned int k;
+  12   1        
+  13   1        PCA0MD = 0x00;        //pour éteindre le Watchdog
+  14   1        
+  15   1        OSCICN |= 0x03;                     // Set internal oscillator to highest
+  16   1        // setting of 24500000
+  17   1        
+  18   1        while(!SDA)
+  19   1        {
+  20   2          // Provide clock pulses to allow the slave to advance out
+  21   2          // of its current state. This will allow it to release SDA.
+  22   2          XBR1 = 0x40;                     // Enable Crossbar
+  23   2          SCL = 0;                         // Drive the clock low
+  24   2          for(i = 0; i < 255; i++);        // Hold the clock low
+  25   2          SCL = 1;                         // Release the clock
+  26   2          while(!SCL);                     // Wait for open-drain
+  27   2                                           // clock output to rise
+  28   2          for(i = 0; i < 10; i++);         // Hold the clock high
+  29   2          XBR1 = 0x00;                     // Disable Crossbar
+  30   2        }
+  31   1        
+  32   1        Port_Init();                        // Initialize Crossbar and GPIO  
+  33   1        Timer0_Init();                      // Configure Timer1 for use 
+  34   1                                            // with SMBus baud rate  
+  35   1        Timer3_Init ();                     // Configure Timer3 for use with
+  36   1                                            // SCL low timeout detect  
+  37   1        SMBus_Init ();                      // Configure and enable SMBus
+  38   1        // If slave is holding SDA low because of an improper SMBus reset or error
+  39   1        UART0_Init();
+  40   1        EIE1 |= 0x01;                       // Enable the SMBus interrupt
+  41   1        EA = 1;                             // Global interrupt enable
+  42   1        
+  43   1        // Initialize buffers
+  44   1        for (k=0; k < SIZE_GETDATE; k++) Date[k] = " ";
+*** WARNING C260 IN LINE 44 OF BaseLib.c: '=': pointer truncation
+  45   1        Date[SIZE_GETDATE-1] = '\0';
+  46   1        
+  47   1        for (k=0; k < SIZE_GETLAT; k++)  Latitude[k] = " ";
+*** WARNING C260 IN LINE 47 OF BaseLib.c: '=': pointer truncation
+  48   1        Latitude[SIZE_GETLAT-1] = '\0';
+  49   1        
+  50   1        for (k=0; k < SIZE_GETLONG; k++) Longitude[k] = " ";
+*** WARNING C260 IN LINE 50 OF BaseLib.c: '=': pointer truncation
+  51   1        Longitude[SIZE_GETLONG-1] = '\0';
+  52   1       
+C51 COMPILER V9.03   BASELIB                                                               09/22/2012 00:37:49 PAGE 2   
+
+  53   1        NUM_ERRORS = 0;
+  54   1       
+  55   1        
+  56   1      }
+  57          
+  58          //-----------------------------------------------------------------------------
+  59          // Timer0_Init()
+  60          //-----------------------------------------------------------------------------
+  61          //
+  62          // Return Value : None
+  63          // Parameters   : None
+  64          //
+  65          // Timer1 configured as the SMBus clock source as follows:
+  66          // - Timer1 in 8-bit auto-reload mode
+  67          // - SYSCLK or SYSCLK / 4 as Timer1 clock source
+  68          // - Timer1 overflow rate => 3 * SMB_FREQUENCY
+  69          // - The resulting SCL clock rate will be ~1/3 the Timer1 overflow rate
+  70          // - Timer1 enabled
+  71          //
+  72          void Timer0_Init (void)
+  73          {
+  74   1        
+  75   1        // Make sure the Timer can produce the appropriate frequency in 8-bit mode
+  76   1        // Supported SMBus Frequencies range from 10kHz to 100kHz.  The CKCON register
+  77   1        // settings may need to change for frequencies outside this range.
+  78   1        #if ((SYSCLK/SMB_FREQUENCY/3) < 255)
+                #define SCALE 1
+                CKCON |= 0x04;                   // Timer0 clock source = SYSCLK
+                #elif ((SYSCLK/SMB_FREQUENCY/4/3) < 255)
+  82   1        #define SCALE 4
+  83   1        CKCON |= 0x01;
+  84   1        CKCON &= ~0x0A;                  // Timer1/0 clock source = SYSCLK / 4
+  85   1        #endif
+  86   1        
+  87   1        TMOD = 0x02;                        // Timer0 in 8-bit auto-reload mode
+  88   1        
+  89   1        // Timer1 configured to overflow at 1/3 the rate defined by SMB_FREQUENCY
+  90   1        TH0 = -(SYSCLK/SMB_FREQUENCY/SCALE/3);
+  91   1        
+  92   1        TL0 = TH0;                          // Init Timer1
+  93   1        
+  94   1        TR0 = 1;                            // Timer1 enabled
+  95   1      }
+  96          
+  97          //-----------------------------------------------------------------------------
+  98          // Timer3_Init
+  99          //-----------------------------------------------------------------------------
+ 100          //
+ 101          // Return Value : None
+ 102          // Parameters   : None
+ 103          //
+ 104          // Timer3 configured for use by the SMBus low timeout detect feature as
+ 105          // follows:
+ 106          // - Timer3 in 16-bit auto-reload mode
+ 107          // - SYSCLK/12 as Timer3 clock source
+ 108          // - Timer3 reload registers loaded for a 25ms overflow period
+ 109          // - Timer3 pre-loaded to overflow after 25ms
+ 110          // - Timer3 enabled
+ 111          //
+ 112          void Timer3_Init (void)
+ 113          {
+ 114   1        TMR3CN = 0x00;                      // Timer3 configured for 16-bit auto-
+C51 COMPILER V9.03   BASELIB                                                               09/22/2012 00:37:49 PAGE 3   
+
+ 115   1                                            // reload, low-byte interrupt disabled  
+ 116   1        CKCON &= ~0x40;                     // Timer3 uses SYSCLK/12
+ 117   1        TMR3RL = 0;   ;                     // Timer3 configured to overflow after ???
+ 118   1        TMR3 = TMR3RL;                         
+ 119   1        EIE1 |= 0x80;                       // Timer3 interrupt enable  
+ 120   1      }
+ 121          
+ 122          //-----------------------------------------------------------------------------
+ 123          // PORT_Init
+ 124          //-----------------------------------------------------------------------------
+ 125          //
+ 126          // Return Value : None
+ 127          // Parameters   : None
+ 128          //
+ 129          // Configure the Crossbar and GPIO ports.
+ 130          //
+ 131          // P0.0   digital   open-drain    SMBus SDA
+ 132          // P0.1   digital   open-drain    SMBus SCL
+ 133          //
+ 134          // P1.3   digital   push-pull     LED
+ 135          //
+ 136          // all other port pins unused
+ 137          //
+ 138          // Note: If the SMBus is moved, the SCL and SDA sbit declarations must also
+ 139          // be adjusted.
+ 140          //
+ 141          void PORT_Init (void)
+ 142          {
+ 143   1        P0MDOUT = 0x00;                     // All P0 pins open-drain output exept P0.6 for PWM
+ 144   1        P0SKIP  = 0x03;                     // Déplace le bus I2C en P0.2 et P0.3
+ 145   1        P1MDOUT |= 0x08;                    // Make the LED (P1.3) a push-pull output
+ 146   1        
+ 147   1        XBR0 = 0x05;                        // Enable SMBus pins & UART
+ 148   1        XBR1 = 0x41;                        // Enable crossbar and weak pull-ups
+ 149   1        
+ 150   1        P0 = 0xFF;
+ 151   1      }
+ 152          
+ 153          
+ 154          //-----------------------------------------------------------------------------
+ 155          // T0_Waitms
+ 156          //-----------------------------------------------------------------------------
+ 157          //
+ 158          // Return Value : None
+ 159          // Parameters   :
+ 160          //   1) unsigned char ms - number of milliseconds to wait
+ 161          //                        range is full range of character: 0 to 255
+ 162          //
+ 163          // Configure Timer0 to wait for <ms> milliseconds using SYSCLK as its time
+ 164          // base.
+ 165          //
+ 166          void T0_Waitms (unsigned char ms)
+ 167          {
+ 168   1        TCON &= ~0x30;                      // Stop Timer0; Clear TF0
+ 169   1        TMOD &= ~0x0f;                      // 16-bit free run mode
+ 170   1        TMOD |=  0x01;
+ 171   1        
+ 172   1        CKCON |= 0x04;                      // Timer0 counts SYSCLKs
+ 173   1        
+ 174   1        while (ms) {
+ 175   2          TR0 = 0;                         // Stop Timer0
+ 176   2          TH0 = -(SYSCLK/1000 >> 8);       // Overflow in 1ms
+C51 COMPILER V9.03   BASELIB                                                               09/22/2012 00:37:49 PAGE 4   
+
+ 177   2          TL0 = -(SYSCLK/1000);
+ 178   2          TF0 = 0;                         // Clear overflow indicator
+ 179   2          TR0 = 1;                         // Start Timer0
+ 180   2          while (!TF0);                    // Wait for overflow
+ 181   2          ms--;                            // Update ms counter
+ 182   2        }
+ 183   1        
+ 184   1        TR0 = 0;                            // Stop Timer0
+ 185   1      }
+ 186          
+ 187          
+ 188          //-----------------------------------------------------------------------------
+ 189          // UART0_Init
+ 190          //-----------------------------------------------------------------------------
+ 191          //
+ 192          // Return Value : None
+ 193          // Parameters   : None
+ 194          //
+ 195          // Configure the UART0 using Timer1, for <BAUDRATE> and 8-N-1.
+ 196          //-----------------------------------------------------------------------------
+ 197          void UART0_Init (void)
+ 198          {
+ 199   1         SCON0 = 0x10;                       // SCON0: 8-bit variable bit rate
+ 200   1                                             //        level of STOP bit is ignored
+ 201   1                                             //        RX enabled
+ 202   1                                             //        ninth bits are zeros
+ 203   1                                             //        clear RI0 and TI0 bits
+ 204   1         if (SYSCLK/BAUDRATE/2/256 < 1) {
+ 205   2            TH1 = -(SYSCLK/BAUDRATE/2);
+ 206   2            CKCON &= ~0x0B;                  // T1M = 1; SCA1:0 = xx
+ 207   2            CKCON |=  0x08;
+ 208   2         } else if (SYSCLK/BAUDRATE/2/256 < 4) {
+ 209   2            TH1 = -(SYSCLK/BAUDRATE/2/4);
+ 210   2            CKCON &= ~0x0B;                  // T1M = 0; SCA1:0 = 01
+ 211   2            CKCON |=  0x01;
+ 212   2         } else if (SYSCLK/BAUDRATE/2/256 < 12) {
+ 213   2            TH1 = -(SYSCLK/BAUDRATE/2/12);
+ 214   2            CKCON &= ~0x0B;                  // T1M = 0; SCA1:0 = 00
+ 215   2         } else {
+ 216   2            TH1 = -(SYSCLK/BAUDRATE/2/48);
+ 217   2            CKCON &= ~0x0B;                  // T1M = 0; SCA1:0 = 10
+ 218   2            CKCON |=  0x02;
+ 219   2         }
+ 220   1      
+ 221   1         TL1 = TH1;                          // init Timer1
+ 222   1         TMOD &= ~0xf0;                      // TMOD: timer 1 in 8-bit autoreload
+ 223   1         TMOD |=  0x20;
+ 224   1         TR1 = 1;                            // START Timer1
+ 225   1      
+ 226   1         IP |= 0x10;                         // Make UART high priority
+ 227   1         ES0 = 1;                            // Enable UART0 interrupts
+ 228   1      
+ 229   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    254    ----
+   CONSTANT SIZE    =      2    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+C51 COMPILER V9.03   BASELIB                                                               09/22/2012 00:37:49 PAGE 5   
+
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  3 WARNING(S),  0 ERROR(S)

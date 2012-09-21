@@ -6,9 +6,11 @@
 // Includes
 //-----------------------------------------------------------------------------
 
+
 #include "I2CLib.h"
 #include "UARTLIB.h"
-#include "BaseLib.h"
+#include "KmodGPS.h"
+#include "KmodACL.h"
 
 //-----------------------------------------------------------------------------
 // Global VARIABLES
@@ -36,8 +38,7 @@ void main (void)
   SysInit();     
   
   // Reset Error Counter
-  NUM_ERRORS = 0;
-  LED = 1;
+ LED = 1;
   StartACC();
   id = GetAccID();
   

@@ -1,7 +1,7 @@
 #ifndef __KMODACL__H_
 #define __KMODACL__H_
 
-#include "I2CLib.h"
+#include "BaseLib.h"
 
 
 // Device addresses (7 bits, lsb is a don't care)

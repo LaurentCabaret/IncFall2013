@@ -1,0 +1,6 @@
+"D:\gitzone\IncFall2012\BaseF330Master.obj",
+"D:\gitzone\IncFall2012\I2CLib.obj",
+"D:\gitzone\IncFall2012\UARTLIB.obj",
+"D:\gitzone\IncFall2012\BaseLib.obj",
+"D:\gitzone\IncFall2012\KmodGPS.obj",
+"D:\gitzone\IncFall2012\KmodACL.obj"  TO "D:\gitzone\IncFall2012\F33x_SMBus_Master" RS(256) PL(68) PW(78) 

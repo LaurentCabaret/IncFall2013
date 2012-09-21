@@ -2,7 +2,6 @@
 // F33x_SMBus_Master_Multibyte.c
 //-----------------------------------------------------------------------------
 
-
 //-----------------------------------------------------------------------------
 // Includes
 //-----------------------------------------------------------------------------
@@ -21,6 +20,7 @@ char Date[SIZE_GETDATE];
 char Latitude[SIZE_GETLAT];
 char Longitude[SIZE_GETLONG];
 int AccX,AccY,AccZ;
+
 //-----------------------------------------------------------------------------
 // MAIN Routine
 //-----------------------------------------------------------------------------
@@ -29,51 +29,48 @@ int AccX,AccY,AccZ;
 // and receiving SMBus data to the slave.
 //
 
-
-
-
 void main (void)
 {
-   int id;
-
-   SysInit();                                       // setting of 24500000
-
-   // Reset Error Counter
-   NUM_ERRORS = 0;
-   LED = 1;
-	  StartACC();
-  	  id = GetAccID();
-
-   while (1) {
-   	  SendWord("Attente d'une consigne de position\n",35);
-      LED = 1;
-	  SendWord("Récupération de l'ID\n",21);
-   	  id = getID();
-      if (id == 42) {
-   	     SendWord("Id Ok\n",6);
-	     LED = 0;
-		 T0_Waitms(50000);
-	  }
-      if (id == -1) {
-	     LED = 0;
-		 T0_Waitms (100);
-   	     SendWord("Id Error\n",9);
-	  }
-
-	  GetDate();
-	  GetLatitude();
-	  GetLongitude();
-	  SendCoords();
-	  GetAccX();
-	  SendChar((AccX/256));
-  	  SendChar((AccY/256));
-  	  SendChar((AccZ/256));
-
-      T0_Waitms (10000);
-   }
-
-
-
+  int id;
+  
+  SysInit();     
+  
+  // Reset Error Counter
+  NUM_ERRORS = 0;
+  LED = 1;
+  StartACC();
+  id = GetAccID();
+  
+  while (1) {
+    SendWord("Attente d'une consigne de position\n",35);
+    LED = 1;
+    SendWord("Récupération de l'ID\n",21);
+    id = getID();
+    if (id == 42) {
+      SendWord("Id Ok\n",6);
+      LED = 0;
+      T0_Waitms(50000);
+    }
+    if (id == -1) {
+      LED = 0;
+      T0_Waitms (100);
+      SendWord("Id Error\n",9);
+    }
+    
+    GetDate();
+    GetLatitude();
+    GetLongitude();
+    SendCoords();
+    GetAccX();
+    SendChar((AccX/256));
+    SendChar((AccY/256));
+    SendChar((AccZ/256));
+    
+    T0_Waitms (10000);
+  }
+  
+  
+  
 }
 
 //-----------------------------------------------------------------------------

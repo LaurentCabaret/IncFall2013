@@ -1,5 +1,4 @@
-#include "I2CLib.h"
-#include "UARTLIB.h"
+#include "BaseLib.h"
 
 
 //---------------------------------------------------------------
@@ -41,13 +40,13 @@ void SysInit(void)
   EA = 1;                             // Global interrupt enable
   
   // Initialize buffers
-  for (k=0; k < SIZE_GETDATE; k++) Date[k] = " ";
+  for (k=0; k < SIZE_GETDATE; k++) Date[k] = ' ';
   Date[SIZE_GETDATE-1] = '\0';
   
-  for (k=0; k < SIZE_GETLAT; k++)  Latitude[k] = " ";
+  for (k=0; k < SIZE_GETLAT; k++)  Latitude[k] = ' ';
   Latitude[SIZE_GETLAT-1] = '\0';
   
-  for (k=0; k < SIZE_GETLONG; k++) Longitude[k] = " ";
+  for (k=0; k < SIZE_GETLONG; k++) Longitude[k] = ' ';
   Longitude[SIZE_GETLONG-1] = '\0';
  
   NUM_ERRORS = 0;

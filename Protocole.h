@@ -1,3 +1,6 @@
+#ifndef __PROTOCOLE__H_
+#define __PROTOCOLE__H_
+
 // Command IDs for SMBus commands
 
 #define CMD_GETDATE  	0x01
@@ -17,3 +20,5 @@
 
 //Adresses
 #define SLAVE_MEM_ADR 0
+
+#endif

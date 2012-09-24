@@ -6,11 +6,12 @@
 // Libs
 //-----------------------------------------------------------------------------
 #include <C8051F330.h>
-#include "Protocole.h"
 #include <string.h>
-
-
-
+#include "I2CLib.h"
+#include "UARTLIB.h"
+#include "KmodGPS.h"
+#include "KmodACL.h"
+#include "Protocole.h"
 
 //-----------------------------------------------------------------------------
 // Global CONSTANTS
@@ -26,8 +27,6 @@ sfr16    TMR3     = 0x94;              // Timer3 counter registers
 
 sbit SDA = P0^2;                       // SMBus on P0.2
 sbit SCL = P0^3;                       //      and P0.3
-
-#define BAUDRATE             19200           // Baud rate of UART in bps
 
 
 
@@ -46,11 +45,5 @@ void Timer3_Init (void);
 void Port_Init (void);
 void T0_Waitms (unsigned char ms);
 void UART0_Init(void);
-
-extern char Date[SIZE_GETDATE];
-extern char Latitude[SIZE_GETLAT];
-extern char Longitude[SIZE_GETLONG];
-extern int AccX,AccY,AccZ;
-
 
 #endif //BASELIB

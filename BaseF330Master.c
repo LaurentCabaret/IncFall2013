@@ -6,22 +6,13 @@
 // Includes
 //-----------------------------------------------------------------------------
 
-
-#include "I2CLib.h"
-#include "UARTLIB.h"
-#include "KmodGPS.h"
-#include "KmodACL.h"
+#include "BaseLib.h"
 
 //-----------------------------------------------------------------------------
 // Global VARIABLES
 //-----------------------------------------------------------------------------
 
 sbit LED = P1^3;                       // LED on port P1.3
-// Buffers for data from the slave module
-char Date[SIZE_GETDATE];
-char Latitude[SIZE_GETLAT];
-char Longitude[SIZE_GETLONG];
-int AccX,AccY,AccZ;
 
 //-----------------------------------------------------------------------------
 // MAIN Routine
@@ -38,7 +29,7 @@ void main (void)
   SysInit();     
   
   // Reset Error Counter
- LED = 1;
+  LED = 1;
   StartACC();
   id = GetAccID();
   
@@ -53,7 +44,6 @@ void main (void)
       T0_Waitms(50000);
     }
     if (id == -1) {
-      LED = 0;
       T0_Waitms (100);
       SendWord("Id Error\n",9);
     }

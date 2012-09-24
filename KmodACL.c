@@ -1,6 +1,8 @@
 #include "I2CLib.h"
 #include "KmodACL.h"
 
+int AccX,AccY,AccZ;
+
 void GetAccX(void) {
    // Reset Timeout flag
    SMB_TIMEOUT = 0;

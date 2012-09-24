@@ -1,5 +1,10 @@
 #include "I2CLib.h"
 #include "KmodGPS.h"
+
+char Date[SIZE_GETDATE];
+char Latitude[SIZE_GETLAT];
+char Longitude[SIZE_GETLONG];
+
 //---------------------------------------------------------------
 // Communication with the GPS module
 //---------------------------------------------------------------

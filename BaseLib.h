@@ -43,7 +43,7 @@ void SysInit(void);
 void Timer0_Init (void);
 void Timer3_Init (void);
 void Port_Init (void);
-void T0_Waitms (unsigned char ms);
+void T0_Waitms (unsigned int ms);
 void UART0_Init(void);
 
 #endif //BASELIB

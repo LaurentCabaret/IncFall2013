@@ -1,5 +1,8 @@
 #include "BaseLib.h"
 
+#define MS_VAL (0xFFFF - SYSCLK/1000)
+#define WORD_H(val) (((val) & 0xFF00) >> 8)
+#define WORD_L(val) ((val) & 0x00FF)
 
 //---------------------------------------------------------------
 // Initialisation globale du système
@@ -162,7 +165,7 @@ void PORT_Init (void)
 // Configure Timer0 to wait for <ms> milliseconds using SYSCLK as its time
 // base.
 //
-void T0_Waitms (unsigned char ms)
+void T0_Waitms (unsigned int ms)
 {
   TCON &= ~0x30;                      // Stop Timer0; Clear TF0
   TMOD &= ~0x0f;                      // 16-bit free run mode
@@ -172,8 +175,8 @@ void T0_Waitms (unsigned char ms)
   
   while (ms) {
     TR0 = 0;                         // Stop Timer0
-    TH0 = -(SYSCLK/1000 >> 8);       // Overflow in 1ms
-    TL0 = -(SYSCLK/1000);
+	TH0 = WORD_H(MS_VAL);            // Overflow in 1 ms
+	TL0 = WORD_L(MS_VAL);
     TF0 = 0;                         // Clear overflow indicator
     TR0 = 1;                         // Start Timer0
     while (!TF0);                    // Wait for overflow

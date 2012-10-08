@@ -46,8 +46,10 @@ void main (void)
       SendWord("Id Ok\n\r",7);
       LED = 0;
     }
-    if (id == -1) {
+    else {
       SendWord("Id Error\n\r",10);
+	  SendChar(id);
+
     }
     
     GetDate();

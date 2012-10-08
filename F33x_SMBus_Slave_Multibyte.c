@@ -56,7 +56,7 @@
 
 #define  SYSCLK         24500000       // System clock frequency in Hz
 
-#define  SMB_FREQUENCY  400000          // Target SMBus frequency
+#define  SMB_FREQUENCY  10000          // Target SMBus frequency
                                        // This example supports between 10kHz
                                        // and 100kHz
 
@@ -152,17 +152,6 @@ void main (void)
 
 
 
-      if ((SMB_DATA_IN[0] >= CMD_GETLIGNE) && (SMB_DATA_IN[0] < CMD_GETLIGNE + LIGNE_PARTS)) { //GetLigneImage()
-	      part = SMB_DATA_IN[0] - CMD_GETLIGNE;
-  		  DataToSend = SIZE_GETLIGNE;
-	      // Copy the data from the input array to the output array
-	      for (i = 0; i < DataToSend; i++)
-    	  {
-		     SMB_DATA_OUT[i] = (i+SIZE_GETLIGNE*part) % 256;
-    	  }
-		  
- 		  LED =1;
-	  }
 
 	      if (SMB_DATA_IN[0]==CMD_GETDATE) {
 	      // Copy the data from the input array to the output array
@@ -233,13 +222,6 @@ void main (void)
           SMB_DATA_OUT[6] = '4'; //
           SMB_DATA_OUT[7] = '\0';
   		  LED =1;
-	}
-
-      if (SMB_DATA_IN[0]==CMD_TAKEPICTURE) { // TakePicture
-	      // Copy the data from the input array to the output array
-   		  LED =1;
-
-		  LED =0;
 	}
 
    }

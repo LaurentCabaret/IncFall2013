@@ -7,7 +7,7 @@
 
 
 // Device addresses (7 bits, lsb is a don't care)
-#define  KMODGPS_ADDR  0x3A           // Device address for slave target
+#define  KMODGPS_ADDR  0xF0           // Device address for slave target
 
 // Communication avec le module GPS (see associated .pdf documentation)
 int  getID(void);

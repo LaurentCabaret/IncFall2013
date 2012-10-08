@@ -19,6 +19,6 @@
 
 
 //Adresses
-#define SLAVE_MEM_ADR 0
+
 
 #endif

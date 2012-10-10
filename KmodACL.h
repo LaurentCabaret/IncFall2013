@@ -11,7 +11,7 @@
 
 void StartACC(void);
 unsigned char GetAccID(void);
-void GetAccX(void);
+void GetAcc(void);
 void send_acc_command(unsigned char cmd, unsigned char size, unsigned char wait);
 void send_acc_command_to_specific_register(unsigned char theregister,unsigned char cmd);
 

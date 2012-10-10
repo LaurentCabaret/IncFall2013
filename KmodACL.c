@@ -3,7 +3,7 @@
 
 int AccX,AccY,AccZ;
 
-void GetAccX(void) {
+void GetAcc(void) {
    // Reset Timeout flag
    SMB_TIMEOUT = 0;
 

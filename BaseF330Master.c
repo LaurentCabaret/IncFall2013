@@ -56,11 +56,8 @@ void main (void)
     GetLatitude();
     GetLongitude();
     SendCoords();
-    GetAccX();
+    GetAcc();
 	sprintf(buffer, "Acc : (%d,%d,%d)\n\r", AccX, AccY, AccZ);
-    //SendChar((AccX/256));
-    //SendChar((AccY/256));
-    //SendChar((AccZ/256));
 	SendWord(buffer, strlen(buffer));
     
     T0_Waitms (1000);

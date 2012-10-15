@@ -1,0 +1,19 @@
+
+BL51 BANKED LINKER/LOCATER V6.22 - SN: Eval Version
+COPYRIGHT KEIL ELEKTRONIK GmbH 1987 - 2009
+"C:\Users\Laurent\Documents\GitHub\Master Version 2 - distribuée\IncFall2012\BaseF330Master.obj",
+"C:\Users\Laurent\Documents\GitHub\Master Version 2 - distribuée\IncFall2012\I2CLib.obj",
+"C:\Users\Laurent\Documents\GitHub\Master Version 2 - distribuée\IncFall2012\UARTLIB.obj",
+"C:\Users\Laurent\Documents\GitHub\Master Version 2 - distribuée\IncFall2012\BaseLib.obj",
+"C:\Users\Laurent\Documents\GitHub\Master Version 2 - distribuée\IncFall2012\KmodGPS.obj",
+"C:\Users\Laurent\Documents\GitHub\Master Version 2 - distribuée\IncFall2012\KmodACL.obj"  TO "C:\Users\Laurent\Documents\GitHub\Master Version 2 - distribuée\IncFall2012\F33x_SMBus_Master" RS(256) PL(68) PW(78) 
+
+******************************************************************************
+* RESTRICTED VERSION WITH 0800H BYTE CODE SIZE LIMIT; USED: 0508H BYTE (62%) *
+******************************************************************************
+
+>> 
+>> 
+>> 
+Program Size: data=83.5 xdata=114 code=2611
+LINK/LOCATE RUN COMPLETE.  0 WARNING(S),  0 ERROR(S)

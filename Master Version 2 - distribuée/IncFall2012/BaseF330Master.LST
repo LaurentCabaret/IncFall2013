@@ -1,0 +1,97 @@
+C51 COMPILER V9.05   BASEF330MASTER                                                        10/15/2012 11:41:50 PAGE 1   
+
+
+C51 COMPILER V9.05, COMPILATION OF MODULE BASEF330MASTER
+OBJECT MODULE PLACED IN BaseF330Master.OBJ
+COMPILER INVOKED BY: C:\Keil\C51\BIN\c51.exe BaseF330Master.c DB OE BR INCDIR(C:\SiLabs\MCU\Inc)
+
+line level    source
+
+   1          //-----------------------------------------------------------------------------
+   2          // F33x_SMBus_Master_Multibyte.c
+   3          //-----------------------------------------------------------------------------
+   4          
+   5          //-----------------------------------------------------------------------------
+   6          // Includes
+   7          //-----------------------------------------------------------------------------
+   8          
+   9          #include "BaseLib.h"
+  10          #include <stdio.h>    // For sprintf usage
+  11          #include <string.h>   // For strlen usage
+  12          
+  13          //-----------------------------------------------------------------------------
+  14          // Global VARIABLES
+  15          //-----------------------------------------------------------------------------
+  16          
+  17          sbit LED = P1^3;                       // LED on port P1.3
+  18          
+  19          //-----------------------------------------------------------------------------
+  20          // MAIN Routine
+  21          //-----------------------------------------------------------------------------
+  22          //
+  23          // Main routine performs all configuration tasks, then loops forever sending
+  24          // and receiving SMBus data to the slave.
+  25          //
+  26          
+  27          xdata char buffer[100];
+  28          
+  29          void main (void)
+  30          {
+  31   1        int id;
+  32   1        
+  33   1        SysInit();     
+  34   1        
+  35   1        // Reset Error Counter
+  36   1        LED = 1;
+  37   1        StartACC();
+  38   1        id = GetAccID();
+  39   1        
+  40   1        while (1) {
+  41   2          SendWord("Debut de la boucle\n\r",20);
+  42   2          LED = 1;
+  43   2          SendWord("Recuperation de l'ID\n\r",22);
+  44   2          id = getID();
+  45   2          if (id == 42) {
+  46   3            SendWord("Id Ok\n\r",7);
+  47   3            LED = 0;
+  48   3          }
+  49   2          else {
+  50   3            SendWord("Id Error\n\r",10);
+  51   3                SendChar(id);
+  52   3      
+  53   3          }
+  54   2          
+  55   2          GetDate();
+C51 COMPILER V9.05   BASEF330MASTER                                                        10/15/2012 11:41:50 PAGE 2   
+
+  56   2          GetLatitude();
+  57   2          GetLongitude();
+  58   2          SendCoords();
+  59   2          GetAcc();
+  60   2              sprintf(buffer, "Acc : (%d,%d,%d)\n\r", AccX, AccY, AccZ);
+  61   2              SendWord(buffer, strlen(buffer));
+  62   2          
+  63   2          T0_Waitms (1000);
+  64   2        }
+  65   1        
+  66   1        
+  67   1        
+  68   1      }
+  69          
+  70          //-----------------------------------------------------------------------------
+  71          // End Of File
+  72          //-----------------------------------------------------------------------------
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    174    ----
+   CONSTANT SIZE    =     82    ----
+   XDATA SIZE       =    100    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       2
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

@@ -6,7 +6,6 @@
 // Libs
 //-----------------------------------------------------------------------------
 #include <C8051F310.h>
-#include "Protocole.h"
 
 
 
@@ -21,7 +20,7 @@
 sfr16    TMR3RL   = 0x92;              // Timer3 reload registers
 sfr16    TMR3     = 0x94;              // Timer3 counter registers
 
-#define BAUDRATE  19200           // Baud rate of UART in bps
+#define BAUDRATE  9600           // Baud rate of UART in bps
 
 //-----------------------------------------------------------------------------
 // Global VARIABLES

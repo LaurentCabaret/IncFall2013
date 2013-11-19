@@ -1,5 +1,5 @@
 //-----------------------------------------------------------------------------
-// Firmware ExLight
+// Firmware Centrale KeyBox INCFall2013
 //-----------------------------------------------------------------------------
 
 //-----------------------------------------------------------------------------
@@ -22,6 +22,11 @@ sbit sw2 = P1^2;
 sbit sw3 = P1^3;
 sbit BTN = P0^7;
 
+char Ligne[20];
+int RxCpt = 0;
+void AnalyseText();
+char getID();
+void setCharID(char *,char);
 //-----------------------------------------------------------------------------
 // Interrupt Routine
 //-----------------------------------------------------------------------------
@@ -33,6 +38,14 @@ void eventUart() interrupt 4
    char charactere ;
    charactere    = SBUF0;
    if (RI0==1) {
+	  if (charactere == 13) {
+		AnalyseText();
+		RxCpt = 0;
+	  }
+	  else {
+		  Ligne[RxCpt] = charactere;
+  		  RxCpt = RxCpt + 1;
+		  }
       FLAG = 1;
 	  pwmValue = charactere;
 	  RI0 = 0;
@@ -45,6 +58,18 @@ void eventUart() interrupt 4
 //-----------------------------------------------------------------------------
 //
 // Quelques outils de base
+
+void AnalyseText() {
+ char Result[6] = "KPYXX\r";
+  	char Id = getID();
+    setCharID(Result,Id);
+	if ((Ligne[0] == Result[0])&&(Ligne[1] == Result[1])&&(Ligne[2] == Result[2])&&(Ligne[3] == Result[3])&&(Ligne[4] == Result[4])) 
+	{
+	  LED = 1;
+//      SendWord(Result,6);
+	}
+	else 	  LED = 0;
+}
 
 char getID() {
 	if ((sw3==0)&&(sw2==0)&&(sw1==0)&&(sw0==0))  return 0;
@@ -103,9 +128,16 @@ void GoToSleep() {
 	
 }
 
+
+void wait(unsigned long int time) {
+	unsigned long int i = 0;
+	while(i<time) {i++;}
+}
+
+
 void main (void)
 {
-  unsigned long int i;
+  unsigned long int i,j;
   unsigned long int FLAG = 0;
   char Id;
   float IntTempVal;
@@ -115,23 +147,28 @@ void main (void)
   SysInit();     
   pwmValue = 0;
 
-  while (1) {
-	Id = getID();
+
+  while (1) {	
+  	Id = getID();
     setCharID(FreeKey,Id);
     setCharID(Presence,Id);
 
-	
-    SendWord(FreeKey,6);
-		LED = 0;
-    
-	if (BTN == 1) {
-		SendWord(Presence,6);
-		LED = 1;
+//		SendWord(Presence,6);
+	j++;
+	if (j==30) {
+	    SendWord(FreeKey,6);
+		j=0;
 		}
 
+    
+	if (BTN == 0) {
+    SendWord(Presence,6);
+	LED = 0;
+		}
+
+	wait(30000);
+
 	
-	while(i<30000) {i++;}
-	i=0;
 
   }
   

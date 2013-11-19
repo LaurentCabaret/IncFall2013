@@ -120,7 +120,7 @@ void PORT_Init (void)
   //P0SKIP  = 0x00;                     // Déplace le bus I2C en P0.2 et P0.3
   P1MDIN = 0x0F;
   XBR0 = 0x01;                        // Enable SMBus pins & UART
-  XBR1 = 0xC1;                        // Enable crossbar and weak pull-ups and PWM
+  XBR1 = 0xC0;                        // Enable crossbar and weak pull-ups and PWM
 
   //P0 = 0xFF;
 }

@@ -12,9 +12,6 @@
 // Global VARIABLES
 //-----------------------------------------------------------------------------
 
-char FLAG = 0;
-short int pwmValue= 120;
-unsigned char currentVal = 255;
 sbit LED = P3^3;
 sbit sw0 = P1^0;
 sbit sw1 = P1^1;
@@ -46,8 +43,6 @@ void eventUart() interrupt 4
 		  Ligne[RxCpt] = charactere;
   		  RxCpt = RxCpt + 1;
 		  }
-      FLAG = 1;
-	  pwmValue = charactere;
 	  RI0 = 0;
 	}	
 }
@@ -61,14 +56,12 @@ void eventUart() interrupt 4
 
 void AnalyseText() {
  char Result[6] = "KPYXX\r";
+ char NotPresent[6] = "KPNXX\r";
   	char Id = getID();
     setCharID(Result,Id);
-	if ((Ligne[0] == Result[0])&&(Ligne[1] == Result[1])&&(Ligne[2] == Result[2])&&(Ligne[3] == Result[3])&&(Ligne[4] == Result[4])) 
-	{
-	  LED = 1;
-//      SendWord(Result,6);
-	}
-	else 	  LED = 0;
+    setCharID(NotPresent,Id);
+	if ((Ligne[0] == Result[0])&&(Ligne[1] == Result[1])&&(Ligne[2] == Result[2])&&(Ligne[3] == Result[3])&&(Ligne[4] == Result[4])) { LED = 1;}
+	if ((Ligne[0] == NotPresent[0])&&(Ligne[1] == NotPresent[1])&&(Ligne[2] == NotPresent[2])&&(Ligne[3] == NotPresent[3])&&(Ligne[4] == NotPresent[4])) { LED = 0;}
 }
 
 char getID() {
@@ -145,28 +138,26 @@ void main (void)
   char Presence[6] = "CP_XX\r";
 
   SysInit();     
-  pwmValue = 0;
-
 
   while (1) {	
   	Id = getID();
     setCharID(FreeKey,Id);
     setCharID(Presence,Id);
 
-//		SendWord(Presence,6);
 	j++;
-	if (j==30) {
-	    SendWord(FreeKey,6);
+	if (j==300) {
+	    SendWord(Presence,6);
 		j=0;
 		}
 
     
 	if (BTN == 0) {
-    SendWord(Presence,6);
-	LED = 0;
+    SendWord(FreeKey,6);
+	wait(300000);
+
 		}
 
-	wait(30000);
+	wait(3000);
 
 	
 

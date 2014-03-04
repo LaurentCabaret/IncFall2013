@@ -8,7 +8,7 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
-\usepackage[french]{babel}
+\usepackage[frenchb]{babel}
 %\usepackage{times}
 \usepackage{graphicx}
 \usepackage{color}
@@ -39,7 +39,6 @@
 % PDF informations
 %-----------------------------------------------------------------
 \hypersetup{%
-  a4paper=true,
   pdfstartview=FitH,
   colorlinks=true,
   pdfborder=0 0 0,
@@ -59,6 +58,8 @@
 
 \newcommand{\saut}{\vspace{0.5cm}}
 \newcommand{\rien}{-}
+\newcommand{\numero}{n\textsuperscript{o}}
+
 \title{{\huge Enhanced Light Bike}\vspace{0.5cm}\\Spécifications du protocole de communication avec la centrale du vélo}
 \author{\href{mailto:Xavier.Lagorce@crans.org}{Xavier Lagorce}\\\href{mailto:laurent.cabaret@ecp.fr}{Laurent Cabaret}}
 \date{3 Mars 2014 - v1.00\\Ce document est sujet à modifications}
@@ -142,14 +143,23 @@ forme suivante :
 
 où :
 \begin{itemize}
-  \item \verb|SS| est à remplacer par les lettres codant un type de capteur particulier
-  \item \verb|D| est à remplacer par le numéro du capteur.
-  \item \verb|V| code la valeur de l'information (U pour front montant et D pour front descendant).  
+  \item \verb|SS| est à remplacer par les lettres codant un type de capteur particulier.
+  \item \verb|D| est à remplacer par le numéro du capteur ou de l'actionneur.
+  \item \verb|V| code la valeur de l'information 
+  \begin{itemize}
+	\item  U pour front montant (bouton appuyé),
+	\item  D pour front descendant(bouton relaché), 
+	\item  H pour position haute (lampe), 
+	\item  L pour position basse (lampe).  
+  \end{itemize}
   \item \verb|<cr>|\footnote{<cr> est un caractère spécial : carriage return ou retour chariot \href{http://fr.wikipedia.org/wiki/American_Standard_Code_for_Information_Interchange}{Code Acsii}}
 \end{itemize}
 
 \subsection{Liste des commandes}
-Le bouton "enocean" sera le premier capteur sur le vélo il reçoit donc le Nom BT1
+Le bouton "enocean" sera le premier capteur sur le vélo il reçoit donc le nom BT1
+La lampe est le premier actionneur sur le vélo il reçoit donc le nom LI1.
+
+Liste des commandes possibles est en provenance de la centrale est :
 \begin{itemize}
 	
 \item 	\verb|BTxU| : Le bouton \numero x a été appuyé.
@@ -157,6 +167,11 @@ Le bouton "enocean" sera le premier capteur sur le vélo il reçoit donc le Nom 
 \item 	\verb|BTxD| : Le bouton \numero x a été relaché.
 
 \item 	\verb|LIx?| : Demande d'état de la lampe \numero.
+\end{itemize}
+
+Liste des réponses en provenance de la lampe :
+\begin{itemize}
+\item 	\verb|LIxK| : La lampe \numero x confirme qu'elle a bien reçu le message.
 
 \item 	\verb|LIxH| : La lampe \numero x est en position haute.
 
@@ -172,25 +187,26 @@ Centrale&ELBike&\\
 \hline
 \hline
 \verb|LI1?<cr>|&\rien& La centrale demande : Position de la lampe ?\\
-\rien&\verb|LI1H<cr>|& La KeyBox répond : Haut\\
+\rien&\verb|LI1H<cr>|& La lampe répond : Haut\\
 \hline
 \vdots&\vdots& 	\\
 \hline
 \verb|LI1?<cr>|&\rien& La centrale demande : Position de la lampe ?\\
-\rien&\verb|LI1H<cr>|& La KeyBox répond : Haut\\
+\rien&\verb|LI1H<cr>|& La lampe répond : Haut\\
 \hline
-\verb|CF_07<cr>|&\rien& Ordre de libération de la clef\\
+\verb|BTxU<cr>|&\rien& La centrale indique que le bouton a été enfoncé\\
+\rien&\verb|LI1K<cr>|& La lampe répond : Bien reçu\\
 \hline
-\verb|CP_07<cr>|&\rien& La centrale demande : Présence clef ?\\
-\rien&\verb|KPY07<cr>|& La KeyBox répond : Oui\\
+\verb|BTxD<cr>|&\rien& La centrale indique que le bouton a été relaché\\
+\rien&\verb|LI1K<cr>|& La lampe répond : Bien reçu\\
 \hline
-\verb|CP_07<cr>|&\rien& La centrale demande : Présence clef ?\\
-\rien&\verb|KPN07<cr>|&La KeyBox répond : Non\\
+\verb|LI1?<cr>|&\rien& La centrale demande : Position de la lampe ?\\
+\rien&\verb|LI1L<cr>|& La lampe répond : Basse\\
 \hline
-\vdots&\vdots&\\
+\vdots&\vdots& 	\\
 \hline
-\verb|CP_07<cr>|&\rien& La centrale demande : Présence clef ?\\
-\rien&\verb|KPY07<cr>|& La KeyBox répond : Oui\\
+\verb|LI1?<cr>|&\rien& La centrale demande : Position de la lampe ?\\
+\rien&\verb|LI1H<cr>|& La lampe répond : Haut\\
 \hline
 \end{tabular}
 \end{center}

@@ -1,7 +1,3 @@
-
-
-
-
 \documentclass[a4paper, 10pt]{article} % For LaTeX2e
 \usepackage{amsmath}
 \usepackage{amssymb}
@@ -47,10 +43,10 @@
   pdfstartview=FitH,
   colorlinks=true,
   pdfborder=0 0 0,
-  pdftitle    = {INC Fall2013 : Spécification du protocole de communication avec le périphérique},
-  pdfsubject  = {},
-  pdfauthor   = {Xavier Lagorce},
-  pdfkeywords = {INC, Fall2013, protocole, communication, clef}}
+  pdftitle    = {INC Spring2014 : Spécification du protocole de communication avec le périphérique},
+  pdfsubject  = {INC, ECP, LISA},
+  pdfauthor   = {Xavier Lagorce,Laurent Cabaret},
+  pdfkeywords = {INC, Spring2014, protocole, communication, enocean}}
 
 %\usepackage{vmargin}            % red?finir les marges
 %\setmarginsrb{3cm}{3cm}{3cm}{3cm}{1cm}{2cm}{1cm}{2cm}
@@ -58,14 +54,14 @@
 % Configuration des headers
 \pagestyle{fancy}
 %\fancyhead{} %Effacer les headers
-\lhead{Projet KeyBox}
-\rhead{Communication avec le périphérique}
+\lhead{Projet Enhanced Light Bike}
+\rhead{Communication avec la centrale du vélo}
 
 \newcommand{\saut}{\vspace{0.5cm}}
 \newcommand{\rien}{-}
-\title{{\huge KeyBox}\vspace{0.5cm}\\Spécifications du protocole de communication avec le périphérique}
+\title{{\huge Enhanced Light Bike}\vspace{0.5cm}\\Spécifications du protocole de communication avec la centrale du vélo}
 \author{\href{mailto:Xavier.Lagorce@crans.org}{Xavier Lagorce}\\\href{mailto:laurent.cabaret@ecp.fr}{Laurent Cabaret}}
-\date{4 Novembre 2013 - v1.02\\Ce document est sujet à modifications}
+\date{3 Mars 2014 - v1.00\\Ce document est sujet à modifications}
 
 \begin{document}
 
@@ -79,11 +75,11 @@
 \section{Introduction}
 
 Le présent document spécifie le protocole de communication utilisé entre l'hôte (la centrale)
-et le périphérique (boîtier de clef dont l'ID est le numéro du groupe (exemple Gr7 $\longrightarrow 07$)).
+et le périphérique (Système d'éclairage).
 
-\section{Medium}
+\section{Médium}
 
-La communication entre l'hôte et le périphérique se fera à travers une liaison propriétaire fournissant un port série (Tx et Rx) \footnote{Cela correspond au type de liaison série utilisée lors de la formation Arduino.} ainsi que 2 alimentations 5V et 12V et une masse.
+La communication entre l'hôte et le périphérique se fera à travers une liaison propriétaire fournissant un port série (Tx et Rx) \footnote{Cela correspond au type de liaison série utilisée lors de la formation Arduino.} ainsi que 2 alimentations 5V et 12V (variable selon votre application - prévenez l'équipe enseignante de vos besoins le plus tôt possible) et une masse.
 
 \saut
 
@@ -127,9 +123,10 @@ RxI&5&6&Nc\\
 Ce point étant critique, il est obligatoire de contacter le responsable du design de la communication de la centrale\footnote{laurent.cabaret@ecp.fr} avant l'impression  de votre carte prototype.
 En effet le sens du connecteur (Top/Bottom/...) du coté centrale n'est pas modifiable.
 
-Nous rappelons que lors de la soutenance il faudra très rapidement pouvoir connecter la centrale a votre système sans démonter de plus de 5s. Tout problème dans cette communication sera considéré comme une erreur de conception.
+Nous rappelons que lors de la soutenance il faudra très rapidement pouvoir connecter la centrale a votre système sans démontage de plus de 5s. Tout problème dans cette communication sera considéré comme une erreur de conception.
 
-Références Farnell : 2293829 ou 2009455
+%Références Farnell : 2293829 ou 2009455
+Références Radiospares : à définir.
 
 Pour simplifier votre travail une bibliothèque de composant est mise a votre disposition sur ged dans composants fournis sous le nom de \emph{LibConnecteur}
 
@@ -140,40 +137,30 @@ Pour simplifier votre travail une bibliothèque de composant est mise a votre di
 Une commande envoyée par l'hôte sera une chaîne de caractères ASCII lisibles par un humain. elle aura la
 forme suivante :
 \begin{center}
-  \verb|IIPPP<cr>|
+  \verb|SSDV<cr>|
 \end{center}
 
 où :
 \begin{itemize}
-  \item \verb|II| est à remplacer par les lettres codant une commande particulière
-  \item \verb|PPP| est à remplacer par l'éventuel argument associé à la commande (il sera remplacé par '\verb|___|' si
-    la commande ne demande pas d'argument).
+  \item \verb|SS| est à remplacer par les lettres codant un type de capteur particulier
+  \item \verb|D| est à remplacer par le numéro du capteur.
+  \item \verb|V| code la valeur de l'information (U pour front montant et D pour front descendant).  
   \item \verb|<cr>|\footnote{<cr> est un caractère spécial : carriage return ou retour chariot \href{http://fr.wikipedia.org/wiki/American_Standard_Code_for_Information_Interchange}{Code Acsii}}
 \end{itemize}
 
 \subsection{Liste des commandes}
+Le bouton "enocean" sera le premier capteur sur le vélo il reçoit donc le Nom BT1
 \begin{itemize}
-
-  \item \textbf{Donner l'information de présence clef (CP)}
-    \begin{center}\verb|CP_ID|\end{center}
-    Cette commande demande au périphérique de donner l'information de présence de la clef.
-    Le périphérique ne doit répondre à cette commande uniquement si l'ID est celui de la boite.
-
-\saut
-
-  \item \textbf{Libérer la clef (CF)}
-    \begin{center}\verb|CF_ID|\end{center}
-    Cette commande demande au périphérique de donner l'ordre de libération de la clef.
-    Le périphérique ne doit obéir à cette commande uniquement si l'ID est celui de la boite.
-\saut 
-
-  \item \textbf{Réponse de la présence clef (KP)}
-    \begin{center}\verb|KPVID|\end{center}
-	Indique à la centrale la présence ou non de la clef.
 	
-	\verb|KPYID| : Clef présente.
+\item 	\verb|BTxU| : Le bouton \numero x a été appuyé.
 	
-	\verb|KPNID| : Clef absente.
+\item 	\verb|BTxD| : Le bouton \numero x a été relaché.
+
+\item 	\verb|LIx?| : Demande d'état de la lampe \numero.
+
+\item 	\verb|LIxH| : La lampe \numero x est en position haute.
+
+\item 	\verb|LIxL| : La lampe \numero x est en position basse.
 \end{itemize}
 
 
@@ -181,16 +168,16 @@ où :
 \begin{center}
 \begin{tabular}{|c|c|p{6cm}|}
 \hline
-Centrale&KeyBox&\\
+Centrale&ELBike&\\
 \hline
 \hline
-\verb|CP_07<cr>|&\rien& La centrale demande : Présence clef ?\\
-\rien&\verb|KPY07<cr>|& La KeyBox répond : Oui\\
+\verb|LI1?<cr>|&\rien& La centrale demande : Position de la lampe ?\\
+\rien&\verb|LI1H<cr>|& La KeyBox répond : Haut\\
 \hline
 \vdots&\vdots& 	\\
 \hline
-\verb|CP_07<cr>|&\rien& La centrale demande : Présence clef ?\\
-\rien&\verb|KPY07<cr>|& La KeyBox répond : Oui\\
+\verb|LI1?<cr>|&\rien& La centrale demande : Position de la lampe ?\\
+\rien&\verb|LI1H<cr>|& La KeyBox répond : Haut\\
 \hline
 \verb|CF_07<cr>|&\rien& Ordre de libération de la clef\\
 \hline

@@ -96,7 +96,7 @@ sous l'appellation 9600/8N1} :
 
 \subsection{Connecteur}
 
-Nous allons utiliser un connecteur à dix contacts 5x2 
+Nous allons utiliser un connecteur à dix contacts 5x2
 
 \begin{center}
 \includegraphics[scale=0.5]{HE10.jpg}
@@ -127,7 +127,7 @@ En effet le sens du connecteur (Top/Bottom/...) du coté centrale n'est pas modi
 Nous rappelons que lors de la soutenance il faudra très rapidement pouvoir connecter la centrale a votre système sans démontage de plus de 5s. Tout problème dans cette communication sera considéré comme une erreur de conception.
 
 %Références Farnell : 2293829 ou 2009455
-Références Radiospares : à définir.
+Références Radiospares : 251-8272 ou 668-9482
 
 Pour simplifier votre travail une bibliothèque de composant est mise a votre disposition sur ged dans composants fournis sous le nom de \emph{LibConnecteur}
 
@@ -145,12 +145,12 @@ où :
 \begin{itemize}
   \item \verb|SS| est à remplacer par les lettres codant un type de capteur particulier.
   \item \verb|D| est à remplacer par le numéro du capteur ou de l'actionneur.
-  \item \verb|V| code la valeur de l'information 
+  \item \verb|V| code la valeur de l'information
   \begin{itemize}
-	\item  U pour front montant (bouton appuyé),
-	\item  D pour front descendant(bouton relaché), 
-	\item  H pour position haute (lampe), 
-	\item  L pour position basse (lampe).  
+	\item  D pour front descendant(bouton appuyé),
+	\item  U pour front montant (bouton relaché),
+	\item  H pour position haute (lampe),
+	\item  L pour position basse (lampe).
   \end{itemize}
   \item \verb|<cr>|\footnote{<cr> est un caractère spécial : carriage return ou retour chariot \href{http://fr.wikipedia.org/wiki/American_Standard_Code_for_Information_Interchange}{Code Acsii}}
 \end{itemize}
@@ -161,10 +161,10 @@ La lampe est le premier actionneur sur le vélo il reçoit donc le nom LI1.
 
 Liste des commandes possibles est en provenance de la centrale est :
 \begin{itemize}
-	
-\item 	\verb|BTxU| : Le bouton \numero x a été appuyé.
-	
-\item 	\verb|BTxD| : Le bouton \numero x a été relaché.
+
+\item 	\verb|BTxD| : Le bouton \numero x a été appuyé.
+
+\item 	\verb|BTxU| : Le bouton \numero x a été relaché.
 
 \item 	\verb|LIx?| : Demande d'état de la lampe \numero.
 \end{itemize}
@@ -194,10 +194,10 @@ Centrale&ELBike&\\
 \verb|LI1?<cr>|&\rien& La centrale demande : Position de la lampe ?\\
 \rien&\verb|LI1H<cr>|& La lampe répond : Haut\\
 \hline
-\verb|BTxU<cr>|&\rien& La centrale indique que le bouton a été enfoncé\\
+\verb|BTxD<cr>|&\rien& La centrale indique que le bouton a été enfoncé\\
 \rien&\verb|LI1K<cr>|& La lampe répond : Bien reçu\\
 \hline
-\verb|BTxD<cr>|&\rien& La centrale indique que le bouton a été relaché\\
+\verb|BTxU<cr>|&\rien& La centrale indique que le bouton a été relaché\\
 \rien&\verb|LI1K<cr>|& La lampe répond : Bien reçu\\
 \hline
 \verb|LI1?<cr>|&\rien& La centrale demande : Position de la lampe ?\\

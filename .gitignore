@@ -1,0 +1,14 @@
+# ignore les fichiers de backup
+*~
+
+# ignore les fichiers de compilation de latex
+*mtc*
+*.aux
+*.lof
+*.lot
+*.maf
+*.out
+*.toc
+*.bbl
+*.blg
+*.log
